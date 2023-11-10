@@ -6,6 +6,7 @@ import { EnvConfiguration } from './config/env.config';
 import { JoiValidationSchema } from './config/joi.validation';
 
 import { AuthModule } from './auth/auth.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
     imports: [
@@ -25,7 +26,9 @@ import { AuthModule } from './auth/auth.module';
             synchronize: true,
         }),
 
-        AuthModule
+        AuthModule,
+
+        SeedModule
     ],
     controllers: [],
     providers: [],
