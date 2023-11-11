@@ -11,9 +11,10 @@ import { SeedService } from './seed.service';
 export class SeedController {
     constructor(private readonly seedService: SeedService) { }
 
-    @Get()
-    @Auth(ValidRoles.superUser) //! comment only before deploy
-    executeSeed() {
-        return this.seedService.runSeed();
-    }
+    //! uncomment only before deploy
+    // @Get()
+    // @Auth(ValidRoles.superUser) //! comment only before deploy
+    // executeSeed() {
+    //     return this.seedService.runSeed();
+    // }
 }

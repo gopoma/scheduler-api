@@ -3,17 +3,35 @@ import {
     BeforeUpdate,
     Column,
     Entity,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+
+import { Event } from '../../events/entities';
 
 @Entity('users')
 export class User {
+    @ApiProperty({
+        example: 'cd533345-f1f3-48c9-a62e-7dc2da50c8f8',
+        description: 'User ID',
+        uniqueItems: true,
+    })
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
+    @ApiProperty({
+        example: 'Diego Huamani Luque',
+        description: 'User Name',
+    })
     @Column('text')
     name: string;
 
+    @ApiProperty({
+        example: 'dhuamanilu@unsa.edu.pe',
+        description: 'User Email',
+        uniqueItems: true,
+    })
     @Column('text', {
         unique: true,
     })
@@ -24,11 +42,15 @@ export class User {
     })
     password: string;
 
+    @ApiProperty()
     @Column('text', {
         array: true,
         default: ['user'],
     })
     roles: string[];
+
+    @OneToMany(() => Event, (event) => event.user)
+    event: Event;
 
     @BeforeInsert()
     checkFieldsBeforeInsert() {

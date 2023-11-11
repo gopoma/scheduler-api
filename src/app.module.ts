@@ -7,6 +7,7 @@ import { JoiValidationSchema } from './config/joi.validation';
 
 import { AuthModule } from './auth/auth.module';
 import { SeedModule } from './seed/seed.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
     imports: [
@@ -28,7 +29,9 @@ import { SeedModule } from './seed/seed.module';
 
         AuthModule,
 
-        SeedModule
+        SeedModule,
+
+        EventsModule
     ],
     controllers: [],
     providers: [],
