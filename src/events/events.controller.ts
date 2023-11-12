@@ -10,7 +10,7 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import { Auth, GetUser } from '../auth/decorators';
 import { User } from '../auth/entities/user.entity';
 import { ValidRoles } from '../auth/interfaces';
-import { CreateTodoDto, UpdateTodoDto } from './dto';
+import { AddParticipantDto, CreateTodoDto, ReplyParticipationDto, UpdateTodoDto } from './dto';
 
 @ApiTags('Events')
 @Controller('events')
@@ -103,5 +103,25 @@ export class EventsController {
         @GetUser() user: User
     ) {
         return this.eventsService.removeTodo(idEvent, idTodo, user);
+    }
+
+    @Post(':idEvent/participants')
+    @Auth(ValidRoles.user)
+    addParticipant(
+        @Param('idEvent', ParseUUIDPipe) idEvent: string,
+        @Body() addParticipantDto: AddParticipantDto,
+        @GetUser() user: User
+    ) {
+        return this.eventsService.addParticipant(idEvent, addParticipantDto, user);
+    }
+
+    @Post(':idEvent/participants/replies')
+    @Auth(ValidRoles.user)
+    replyParticipation(
+        @Param('idEvent', ParseUUIDPipe) idEvent: string,
+        @Body() replyParticipationDto: ReplyParticipationDto,
+        @GetUser() user: User
+    ) {
+        return this.eventsService.replyParticipation(idEvent, replyParticipationDto, user);
     }
 }

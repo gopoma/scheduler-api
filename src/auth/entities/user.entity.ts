@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { Event } from '../../events/entities';
+import { Event, Participant } from '../../events/entities';
 
 @Entity('users')
 export class User {
@@ -51,6 +51,9 @@ export class User {
 
     @OneToMany(() => Event, (event) => event.user)
     event: Event;
+
+    @OneToMany(() => Participant, (participant) => participant.user)
+    participants: Participant[];
 
     @BeforeInsert()
     checkFieldsBeforeInsert() {

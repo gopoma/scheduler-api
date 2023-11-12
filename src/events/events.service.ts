@@ -4,6 +4,7 @@ import {
     Injectable,
     InternalServerErrorException,
     Logger,
+    NotAcceptableException,
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,9 +13,11 @@ import { DataSource, Repository } from 'typeorm';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 
-import { Event, Todo } from './entities';
+import { Event, Participant, Todo } from './entities';
 import { User } from '../auth/entities/user.entity';
-import { CreateTodoDto, UpdateTodoDto } from './dto';
+import { AddParticipantDto, CreateTodoDto, UpdateTodoDto } from './dto';
+import { ParticipantStatus } from './entities/participant';
+import { ReplyParticipationDto } from './dto/reply-participation';
 
 @Injectable()
 export class EventsService {
@@ -26,6 +29,12 @@ export class EventsService {
 
         @InjectRepository(Todo)
         private readonly todoRepository: Repository<Todo>,
+
+        @InjectRepository(Participant)
+        private readonly participantRepository: Repository<Participant>,
+
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
 
         private readonly dataSource: DataSource,
     ) { }
@@ -159,6 +168,59 @@ export class EventsService {
         });
 
         return events;
+    }
+
+    async addParticipant(idEvent: string, { idUser }: AddParticipantDto, user: User) {
+        await this.checkAuthority(idEvent, user);
+
+        if(idUser === user.id) throw new BadRequestException('You can\'t invite yourself');
+
+        const guest = await this.userRepository.findOneBy({ id: idUser });
+        if(!guest) throw new BadRequestException(`User with 'id' ${idUser} not found`);
+
+        const invitation = await this.participantRepository.findOneBy({
+            event: {
+                id: idEvent
+            },
+            user: {
+                id: idUser
+            }
+        });
+
+        if(invitation) {
+            if(invitation.status === ParticipantStatus.ACCEPTED) {
+                throw new BadRequestException('User already invited [Accepted]');
+            } else if(invitation.status === ParticipantStatus.REJECTED) {
+                await this.participantRepository.remove(invitation);
+            } else if(invitation.status === ParticipantStatus.UNREPLIED) {
+                throw new BadRequestException('User already invited [Waiting for reply...]');
+            }
+        }
+
+        const newInvitation = this.participantRepository.create({
+            event: { id: idEvent },
+            user: { id: idUser }
+        });
+
+        await this.participantRepository.save(newInvitation);
+
+        return newInvitation;
+    }
+
+    async replyParticipation(idEvent: string, replyParticipationDto: ReplyParticipationDto, user: User) {
+        const invitation = await this.participantRepository.findOneBy({
+            event: { id: idEvent },
+            user: { id: user.id }
+        });
+
+        if(!invitation)
+            throw new BadRequestException('Invitation not found');
+
+        if(invitation.status !== ParticipantStatus.UNREPLIED)
+            throw new NotAcceptableException('You\'ve already replied that invitation');
+
+        invitation.status = replyParticipationDto.status as ParticipantStatus;
+        await this.participantRepository.save(invitation);
     }
 
     private async checkAuthority(idEvent: string, user: User) {
