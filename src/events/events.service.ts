@@ -149,6 +149,18 @@ export class EventsService {
         await this.todoRepository.remove(todo);
     }
 
+    async getMyEvents(user: User) {
+        const events = await this.eventRepository.find({
+            where: {
+                user: {
+                    id: user.id
+                }
+            }
+        });
+
+        return events;
+    }
+
     private async checkAuthority(idEvent: string, user: User) {
         const event = await this.eventRepository.findOneBy({ id: idEvent });
 

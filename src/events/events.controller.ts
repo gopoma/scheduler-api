@@ -33,6 +33,12 @@ export class EventsController {
         return this.eventsService.create(createEventDto, user);
     }
 
+    @Get('my')
+    @Auth(ValidRoles.user)
+    getMyEvents(@GetUser() user: User) {
+        return this.eventsService.getMyEvents(user);
+    }
+
     @Get(':idEvent')
     @Auth(ValidRoles.user)
     findOne(
