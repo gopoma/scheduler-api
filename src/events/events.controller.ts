@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { Event, Todo } from './entities';
+import { Event, Participant, Todo } from './entities';
 import { EventsService } from './events.service';
 
 import { CreateEventDto } from './dto/create-event.dto';
@@ -33,7 +33,7 @@ export class EventsController {
         return this.eventsService.create(createEventDto, user);
     }
 
-    @Get('my')
+    @Get('me')
     @Auth(ValidRoles.user)
     getMyEvents(@GetUser() user: User) {
         return this.eventsService.getMyEvents(user);
@@ -123,5 +123,18 @@ export class EventsController {
         @GetUser() user: User
     ) {
         return this.eventsService.replyParticipation(idEvent, replyParticipationDto, user);
+    }
+
+    @Get('participants/invitations/me')
+    @Auth(ValidRoles.user)
+    @ApiResponse({
+        status: 200,
+        description: 'Resolve my invitations',
+        isArray: true,
+        type: Participant,
+    })
+    @ApiResponse({ status: 403, description: 'Forbidden. Token related.' })
+    getMyInvitations(@GetUser() user: User) {
+        return this.eventsService.getMyInvitations(user);
     }
 }

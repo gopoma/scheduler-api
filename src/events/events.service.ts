@@ -223,6 +223,19 @@ export class EventsService {
         await this.participantRepository.save(invitation);
     }
 
+    async getMyInvitations(user: User) {
+        const invitations = await this.participantRepository.find({
+            relations: {
+                event: true,
+            },
+            where: {
+                user: { id: user.id }
+            }
+        });
+
+        return invitations;
+    }
+
     private async checkAuthority(idEvent: string, user: User) {
         const event = await this.eventRepository.findOneBy({ id: idEvent });
 

@@ -21,12 +21,17 @@ export class Participant {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
+    @ApiProperty({ type: () => Event })
     @ManyToOne(() => Event, (event) => event.participants)
     event: Event;
 
     @ManyToOne(() => User, (user) => user.participants, { eager: true })
     user: User;
 
+    @ApiProperty({
+        enum: ParticipantStatus,
+        description: "Invitation Status"
+    })
     @Column({
         type: "enum",
         enum: ParticipantStatus,
