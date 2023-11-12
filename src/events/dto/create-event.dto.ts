@@ -12,12 +12,18 @@ export class CreateEventDto {
     @IsOptional()
     description?: string;
 
-    @ApiProperty()
+    @ApiProperty({
+        example: '2023-11-11T02:10:25.954Z',
+        description: 'When the Event starts',
+    })
     @IsDateString()
     @MinLength(1)
     start: string;
 
-    @ApiProperty()
+    @ApiProperty({
+        example: '2023-11-11T02:16:25.954Z',
+        description: 'When the Event ends',
+    })
     @IsDateString()
     @MinLength(1)
     end: string;

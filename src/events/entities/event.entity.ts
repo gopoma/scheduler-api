@@ -2,11 +2,13 @@ import {
     Column,
     Entity,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { User } from '../../auth/entities/user.entity';
+import { Todo } from './';
 
 @Entity('events')
 export class Event {
@@ -49,4 +51,8 @@ export class Event {
     @ApiProperty({ type: () => User })
     @ManyToOne(() => User, (user) => user.event, { eager: true })
     user: User;
+
+    @ApiProperty({ isArray: true, type: () => Todo })
+    @OneToMany(() => Todo, (todo) => todo.event, { eager: true })
+    todos: Todo[];
 }
