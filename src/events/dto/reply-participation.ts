@@ -1,10 +1,12 @@
+import { IsIn } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { ParticipantStatus } from '../entities';
-import { IsIn } from 'class-validator';
-
 
 export class ReplyParticipationDto {
-    @ApiProperty()
+    @ApiProperty({
+        enum: [ParticipantStatus.ACCEPTED, ParticipantStatus.REJECTED],
+        description: 'Possible replies',
+    })
     @IsIn([ParticipantStatus.ACCEPTED, ParticipantStatus.REJECTED])
     status: string;
 }
