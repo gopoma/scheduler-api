@@ -8,7 +8,7 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
@@ -58,8 +58,6 @@ export class EventsService {
     }
 
     async findOne(idEvent: string, user: User) {
-        await this.checkAuthority(idEvent, user);
-
         const event = await this.eventRepository.findOne({
             relations: {
                 participants: {
@@ -71,6 +69,24 @@ export class EventsService {
                 id: idEvent
             }
         });
+
+        if (!event) throw new NotFoundException(`Event with 'id' ${idEvent} not found`);
+
+        const event_invitation = await this.participantRepository.findOneBy({
+            event: {
+                id: idEvent,
+            },
+            user: {
+                id: user.id
+            },
+            status: In([ParticipantStatus.ACCEPTED, ParticipantStatus.UNREPLIED])
+        });
+
+        const isAuthor = event.user.id === user.id;
+        const hasInvitation = !!event_invitation;
+
+        if(!isAuthor && !hasInvitation)
+            throw new ForbiddenException(`You have to have a role in the event to access it`);
 
         return event;
     }
