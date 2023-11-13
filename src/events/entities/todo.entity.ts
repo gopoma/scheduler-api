@@ -28,6 +28,12 @@ export class Todo {
     })
     done: boolean;
 
-    @ManyToOne(() => Event, (event) => event.todos)
+
+
+    @ManyToOne(
+        () => Event,
+        (event) => event.todos,
+        {  onDelete: 'CASCADE' }
+    )
     event: Event;
 }

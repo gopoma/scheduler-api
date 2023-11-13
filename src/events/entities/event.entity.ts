@@ -48,14 +48,28 @@ export class Event {
     @Column('timestamptz')
     end: Date;
 
+
+
     @ApiProperty({ type: () => User })
-    @ManyToOne(() => User, (user) => user.event, { eager: true })
+    @ManyToOne(
+        () => User,
+        (user) => user.events,
+        {  onDelete: 'CASCADE' }
+    )
     user: User;
 
     @ApiProperty({ isArray: true, type: () => Todo })
-    @OneToMany(() => Todo, (todo) => todo.event, { eager: true })
+    @OneToMany(
+        () => Todo,
+        (todo) => todo.event,
+        { cascade: true, eager: true }
+    )
     todos: Todo[];
 
-    @OneToMany(() => Participant, (participant) => participant.event, { eager: true })
+    @OneToMany(
+        () => Participant,
+        (participant) => participant.event,
+        { cascade: true, eager: true }
+    )
     participants: Participant[];
 }

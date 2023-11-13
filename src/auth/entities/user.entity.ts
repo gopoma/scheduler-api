@@ -50,18 +50,27 @@ export class User {
     })
     roles: string[];
 
-    @OneToMany(() => Event, (event) => event.user)
-    event: Event;
 
-    @OneToMany(() => Participant, (participant) => participant.user)
-    participants: Participant[];
+
+    @OneToMany(
+        () => Event,
+        (event) => event.user,
+    )
+    events: Event[];
+
+    @OneToMany(
+        () => Participant,
+        (participant) => participant.user,
+    )
+    event_invitations: Participant[];
 
     @OneToMany(
         () => Member,
         (member) => member.user,
-        { cascade: true, eager: true }
     )
     groups: Member[];
+
+
 
     @BeforeInsert()
     checkFieldsBeforeInsert() {

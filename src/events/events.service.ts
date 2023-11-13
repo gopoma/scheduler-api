@@ -60,7 +60,16 @@ export class EventsService {
     async findOne(idEvent: string, user: User) {
         await this.checkAuthority(idEvent, user);
 
-        const event = await this.eventRepository.findOneBy({ id: idEvent });
+        const event = await this.eventRepository.findOne({
+            relations: {
+                participants: {
+                    user: true
+                }
+            },
+            where: {
+                id: idEvent
+            }
+        });
 
         return event;
     }
@@ -160,6 +169,11 @@ export class EventsService {
 
     async getMyEvents(user: User) {
         const events = await this.eventRepository.find({
+            relations: {
+                participants: {
+                    user: true
+                }
+            },
             where: {
                 user: {
                     id: user.id
@@ -237,7 +251,14 @@ export class EventsService {
     }
 
     private async checkAuthority(idEvent: string, user: User) {
-        const event = await this.eventRepository.findOneBy({ id: idEvent });
+        const event = await this.eventRepository.findOne({
+            relations: {
+                user: true
+            },
+            where: {
+                id: idEvent
+            }
+        });
 
         if (!event) throw new NotFoundException(`Event with 'id' ${idEvent} not found`);
 

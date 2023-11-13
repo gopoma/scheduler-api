@@ -22,10 +22,18 @@ export class Participant {
     id: string;
 
     @ApiProperty({ type: () => Event })
-    @ManyToOne(() => Event, (event) => event.participants)
+    @ManyToOne(
+        () => Event,
+        (event) => event.participants,
+        {  onDelete: 'CASCADE' }
+    )
     event: Event;
 
-    @ManyToOne(() => User, (user) => user.participants, { eager: true })
+    @ManyToOne(
+        () => User,
+        (user) => user.events,
+        {  onDelete: 'CASCADE' }
+    )
     user: User;
 
     @ApiProperty({
