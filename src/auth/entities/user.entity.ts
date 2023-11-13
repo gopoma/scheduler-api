@@ -9,6 +9,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Event, Participant } from '../../events/entities';
+import { Member } from 'src/groups/entities';
 
 @Entity('users')
 export class User {
@@ -54,6 +55,13 @@ export class User {
 
     @OneToMany(() => Participant, (participant) => participant.user)
     participants: Participant[];
+
+    @OneToMany(
+        () => Member,
+        (member) => member.user,
+        { cascade: true, eager: true }
+    )
+    groups: Member[];
 
     @BeforeInsert()
     checkFieldsBeforeInsert() {
