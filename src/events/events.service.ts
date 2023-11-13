@@ -64,7 +64,8 @@ export class EventsService {
             relations: {
                 participants: {
                     user: true
-                }
+                },
+                user: true
             },
             where: {
                 id: idEvent
