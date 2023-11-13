@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { GroupsService } from './groups.service';
 
@@ -8,6 +9,7 @@ import { Auth, GetUser } from '../auth/decorators';
 import { User } from '../auth/entities/user.entity';
 import { ValidRoles } from '../auth/interfaces';
 
+@ApiTags('Groups')
 @Controller('groups')
 export class GroupsController {
     constructor(private readonly groupsService: GroupsService) { }
