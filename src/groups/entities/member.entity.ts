@@ -1,4 +1,5 @@
 import {
+    Column,
     Entity,
     ManyToOne,
     PrimaryGeneratedColumn,
@@ -6,6 +7,12 @@ import {
 
 import { Group } from "./";
 import { User } from '../../auth/entities/user.entity';
+
+export enum MemberStatus {
+    ACCEPTED = "accepted",
+    REJECTED = "rejected",
+    UNREPLIED = "unreplied",
+}
 
 @Entity('members')
 export class Member {
@@ -25,4 +32,11 @@ export class Member {
         {  onDelete: 'CASCADE' }
     )
     user: User;
+
+    @Column({
+        type: "enum",
+        enum: MemberStatus,
+        default: MemberStatus.UNREPLIED,
+    })
+    status: MemberStatus;
 }
