@@ -1,11 +1,13 @@
 import {
     Column,
     Entity,
+    ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { Member } from './';
+import { User } from '../../auth/entities/user.entity';
 
 @Entity('groups')
 export class Group {
@@ -26,6 +28,15 @@ export class Group {
         nullable: true,
     })
     image: string;
+
+
+
+    @ManyToOne(
+        () => User,
+        (user) => user.groups,
+        {  onDelete: 'CASCADE' }
+    )
+    user: User;
 
     @OneToMany(
         () => Member,

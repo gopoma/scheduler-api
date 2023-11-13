@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
 
 import { GroupsService } from './groups.service';
 
@@ -13,27 +13,39 @@ export class GroupsController {
     constructor(private readonly groupsService: GroupsService) { }
 
     @Post()
-    create(@Body() createGroupDto: CreateGroupDto) {
-        return this.groupsService.create(createGroupDto);
+    @Auth(ValidRoles.user)
+    create(
+        @Body() createGroupDto: CreateGroupDto,
+        @GetUser() user: User
+    ) {
+        return this.groupsService.create(createGroupDto, user);
     }
 
-    @Get()
-    findAll() {
-        return this.groupsService.findAll();
+    @Get(':idGroup')
+    @Auth(ValidRoles.user)
+    findOne(
+        @Param('idGroup', ParseUUIDPipe) idGroup: string,
+        @GetUser() user: User
+    ) {
+        return this.groupsService.findOne(idGroup, user);
     }
 
-    @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.groupsService.findOne(+id);
+    @Patch(':idGroup')
+    @Auth(ValidRoles.user)
+    update(
+        @Param('idGroup', ParseUUIDPipe) idGroup: string,
+        @Body() updateGroupDto: UpdateGroupDto,
+        @GetUser() user: User
+    ) {
+        return this.groupsService.update(idGroup, updateGroupDto, user);
     }
 
-    @Patch(':id')
-    update(@Param('id') id: string, @Body() updateGroupDto: UpdateGroupDto) {
-        return this.groupsService.update(+id, updateGroupDto);
-    }
-
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.groupsService.remove(+id);
+    @Delete(':idGroup')
+    @Auth(ValidRoles.user)
+    remove(
+        @Param('idGroup', ParseUUIDPipe) idGroup: string,
+        @GetUser() user: User
+    ) {
+        return this.groupsService.remove(idGroup, user);
     }
 }

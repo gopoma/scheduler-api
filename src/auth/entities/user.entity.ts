@@ -9,7 +9,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Event, Participant } from '../../events/entities';
-import { Member } from 'src/groups/entities';
+import { Group, Member } from '../../groups/entities';
 
 @Entity('users')
 export class User {
@@ -65,10 +65,16 @@ export class User {
     event_invitations: Participant[];
 
     @OneToMany(
+        () => Group,
+        (group) => group.user,
+    )
+    groups: Group[];
+
+    @OneToMany(
         () => Member,
         (member) => member.user,
     )
-    groups: Member[];
+    group_invitations: Member[];
 
 
 
