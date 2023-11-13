@@ -168,7 +168,7 @@ export class EventsService {
     }
 
     async getMyEvents(user: User) {
-        const events = await this.eventRepository.find({
+        let events = await this.eventRepository.find({
             relations: {
                 participants: {
                     user: true
@@ -180,6 +180,27 @@ export class EventsService {
                 }
             }
         });
+
+        const event_invitations = await this.participantRepository.find({
+            relations: {
+                event: {
+                    participants: {
+                        user: true
+                    }
+                }
+            },
+            where: {
+                user: {
+                    id: user.id
+                },
+                status: ParticipantStatus.ACCEPTED
+            }
+        });
+
+        events = [
+            ...events,
+            ...event_invitations.map(invitation => invitation.event)
+        ];
 
         return events;
     }
