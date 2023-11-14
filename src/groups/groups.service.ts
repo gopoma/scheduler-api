@@ -8,7 +8,7 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
@@ -50,8 +50,6 @@ export class GroupsService {
     }
 
     async findOne(idGroup: string, user: User) {
-        await this.checkAuthority(idGroup, user);
-
         const group = await this.groupRepository.findOne({
             relations: {
                 members: {
@@ -63,6 +61,24 @@ export class GroupsService {
                 id: idGroup
             }
         });
+
+        if (!group) throw new NotFoundException(`Group with 'id' ${idGroup} not found`);
+
+        const group_invitation = await this.memberRepository.findOneBy({
+            group: {
+                id: idGroup,
+            },
+            user: {
+                id: user.id
+            },
+            status: In([MemberStatus.ACCEPTED, MemberStatus.UNREPLIED])
+        });
+
+        const isAuthor = group.user.id === user.id;
+        const hasInvitation = !!group_invitation;
+
+        if(!isAuthor && !hasInvitation)
+            throw new ForbiddenException(`To access the group, you need to be a member of it.`);
 
         return group;
     }

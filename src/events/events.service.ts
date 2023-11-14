@@ -86,7 +86,7 @@ export class EventsService {
         const hasInvitation = !!event_invitation;
 
         if(!isAuthor && !hasInvitation)
-            throw new ForbiddenException(`You have to have a role in the event to access it`);
+            throw new ForbiddenException(`To access the event, you need to be a participant in it.`);
 
         return event;
     }
