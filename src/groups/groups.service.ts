@@ -202,7 +202,8 @@ export class GroupsService {
                 group: {
                     members: {
                         user: true
-                    }
+                    },
+                    user: true
                 }
             },
             where: {
