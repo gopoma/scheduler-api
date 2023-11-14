@@ -13,8 +13,9 @@ import { DataSource, Repository } from 'typeorm';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 
-import { Group } from './entities';
+import { Group, Member, MemberStatus } from './entities';
 import { User } from '../auth/entities/user.entity';
+import { AddMemberDto } from './dto';
 
 @Injectable()
 export class GroupsService {
@@ -23,6 +24,12 @@ export class GroupsService {
     constructor(
         @InjectRepository(Group)
         private readonly groupRepository: Repository<Group>,
+
+        @InjectRepository(Member)
+        private readonly memberRepository: Repository<Member>,
+
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
 
         private readonly dataSource: DataSource,
     ) { }
@@ -92,6 +99,43 @@ export class GroupsService {
 
         const group = await this.groupRepository.findOneBy({ id: idGroup });
         await this.groupRepository.remove(group);
+    }
+
+    async addMember(idGroup: string, { idUser }: AddMemberDto, user: User) {
+        await this.checkAuthority(idGroup, user);
+
+        if(idUser === user.id) throw new BadRequestException('You can\'t invite yourself');
+
+        const guest = await this.userRepository.findOneBy({ id: idUser });
+        if(!guest) throw new BadRequestException(`User with 'id' ${idUser} not found`);
+
+        const invitation = await this.memberRepository.findOneBy({
+            group: {
+                id: idGroup
+            },
+            user: {
+                id: idUser
+            }
+        });
+
+        if(invitation) {
+            if(invitation.status === MemberStatus.ACCEPTED) {
+                throw new BadRequestException('User already invited [Accepted]');
+            } else if(invitation.status === MemberStatus.REJECTED) {
+                await this.memberRepository.remove(invitation);
+            } else if(invitation.status === MemberStatus.UNREPLIED) {
+                throw new BadRequestException('User already invited [Waiting for reply...]');
+            }
+        }
+
+        const newInvitation = this.memberRepository.create({
+            group: { id: idGroup },
+            user: { id: idUser }
+        });
+
+        await this.memberRepository.save(newInvitation);
+
+        return newInvitation;
     }
 
     private async checkAuthority(idGroup: string, user: User) {

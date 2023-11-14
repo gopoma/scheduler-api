@@ -50,4 +50,30 @@ export class GroupsController {
     ) {
         return this.groupsService.remove(idGroup, user);
     }
+
+    @Post(':idGroup/members')
+    @Auth(ValidRoles.user)
+    addMember(
+        @Param('idGroup', ParseUUIDPipe) idGroup: string,
+        @Body() addMemberDto: AddMemberDto,
+        @GetUser() user: User
+    ) {
+        return this.groupsService.addMember(idGroup, addMemberDto, user);
+    }
+
+    @Post(':idGroup/members/replies')
+    @Auth(ValidRoles.user)
+    replyParticipation(
+        @Param('idGroup', ParseUUIDPipe) idGroup: string,
+        @Body() replyInvitationDto: ReplyInvitationDto,
+        @GetUser() user: User
+    ) {
+        // return this.groupsService.replyInvitation(idGroup, replyInvitationDto, user);
+    }
+
+    @Get('events/invitations/me')
+    @Auth(ValidRoles.user)
+    getMyInvitations(@GetUser() user: User) {
+        // return this.groupsService.getMyInvitations(user);
+    }
 }
