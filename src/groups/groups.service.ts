@@ -188,7 +188,8 @@ export class GroupsService {
             relations: {
                 members: {
                     user: true
-                }
+                },
+                user: true
             },
             where: {
                 user: {
