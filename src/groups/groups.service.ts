@@ -167,6 +167,44 @@ export class GroupsService {
         return invitations;
     }
 
+    async getMyGroups(user: User) {
+        let groups = await this.groupRepository.find({
+            relations: {
+                members: {
+                    user: true
+                }
+            },
+            where: {
+                user: {
+                    id: user.id
+                }
+            }
+        });
+
+        const group_invitations = await this.memberRepository.find({
+            relations: {
+                group: {
+                    members: {
+                        user: true
+                    }
+                }
+            },
+            where: {
+                user: {
+                    id: user.id
+                },
+                status: MemberStatus.ACCEPTED
+            }
+        });
+
+        groups = [
+            ...groups,
+            ...group_invitations.map(invitation => invitation.group)
+        ];
+
+        return groups;
+    }
+
     private async checkAuthority(idGroup: string, user: User) {
         const group = await this.groupRepository.findOne({
             relations: {

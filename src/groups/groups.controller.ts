@@ -23,6 +23,12 @@ export class GroupsController {
         return this.groupsService.create(createGroupDto, user);
     }
 
+    @Get('me')
+    @Auth(ValidRoles.user)
+    getMyGroups(@GetUser() user: User) {
+        return this.groupsService.getMyGroups(user);
+    }
+
     @Get(':idGroup')
     @Auth(ValidRoles.user)
     findOne(
