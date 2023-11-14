@@ -63,17 +63,17 @@ export class GroupsController {
 
     @Post(':idGroup/members/replies')
     @Auth(ValidRoles.user)
-    replyParticipation(
+    replyInvitation(
         @Param('idGroup', ParseUUIDPipe) idGroup: string,
         @Body() replyInvitationDto: ReplyInvitationDto,
         @GetUser() user: User
     ) {
-        // return this.groupsService.replyInvitation(idGroup, replyInvitationDto, user);
+        return this.groupsService.replyInvitation(idGroup, replyInvitationDto, user);
     }
 
-    @Get('events/invitations/me')
+    @Get('members/invitations/me')
     @Auth(ValidRoles.user)
     getMyInvitations(@GetUser() user: User) {
-        // return this.groupsService.getMyInvitations(user);
+        return this.groupsService.getMyInvitations(user);
     }
 }

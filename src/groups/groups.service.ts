@@ -15,7 +15,7 @@ import { UpdateGroupDto } from './dto/update-group.dto';
 
 import { Group, Member, MemberStatus } from './entities';
 import { User } from '../auth/entities/user.entity';
-import { AddMemberDto } from './dto';
+import { AddMemberDto, ReplyInvitationDto } from './dto';
 
 @Injectable()
 export class GroupsService {
@@ -136,6 +136,35 @@ export class GroupsService {
         await this.memberRepository.save(newInvitation);
 
         return newInvitation;
+    }
+
+    async replyInvitation(idGroup: string, replyInvitationDto: ReplyInvitationDto, user: User) {
+        const invitation = await this.memberRepository.findOneBy({
+            group: { id: idGroup },
+            user: { id: user.id }
+        });
+
+        if(!invitation)
+            throw new BadRequestException('Invitation not found');
+
+        if(invitation.status !== MemberStatus.UNREPLIED)
+            throw new NotAcceptableException('You\'ve already replied that invitation');
+
+        invitation.status = replyInvitationDto.status as MemberStatus;
+        await this.memberRepository.save(invitation);
+    }
+
+    async getMyInvitations(user: User) {
+        const invitations = await this.memberRepository.find({
+            relations: {
+                group: true,
+            },
+            where: {
+                user: { id: user.id }
+            }
+        });
+
+        return invitations;
     }
 
     private async checkAuthority(idGroup: string, user: User) {
