@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { SeedModule } from './seed/seed.module';
 import { EventsModule } from './events/events.module';
 import { GroupsModule } from './groups/groups.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
     imports: [
@@ -34,7 +35,9 @@ import { GroupsModule } from './groups/groups.module';
 
         EventsModule,
 
-        GroupsModule
+        GroupsModule,
+
+        UsersModule
     ],
     controllers: [],
     providers: [],
