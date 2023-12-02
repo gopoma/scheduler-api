@@ -37,6 +37,7 @@ export class Event {
     @ApiProperty({
         example: '#C0D3FD',
         description: 'Event Color',
+        required: false
     })
     @Column({
         type: 'text',
