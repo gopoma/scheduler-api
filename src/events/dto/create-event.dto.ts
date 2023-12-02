@@ -12,6 +12,11 @@ export class CreateEventDto {
     @IsOptional()
     description?: string;
 
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
+    color?: string;
+
     @ApiProperty({
         example: '2023-11-11T02:10:25.954Z',
         description: 'When the Event starts',

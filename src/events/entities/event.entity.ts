@@ -35,6 +35,17 @@ export class Event {
     description: string;
 
     @ApiProperty({
+        example: '#C0D3FD',
+        description: 'Event Color',
+    })
+    @Column({
+        type: 'text',
+        default: '#C0D3FD',
+        nullable: true
+    })
+    color: string;
+
+    @ApiProperty({
         example: '2023-11-11T02:10:25.954Z',
         description: 'When the Event starts',
     })
