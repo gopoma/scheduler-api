@@ -49,6 +49,13 @@ export class EventsController {
     }
 
     @Patch(':idEvent')
+    @ApiResponse({
+        status: 202,
+        description: 'Event was edited',
+        type: Event,
+    })
+    @ApiResponse({ status: 400, description: 'Bad request' })
+    @ApiResponse({ status: 403, description: 'Forbidden. Token related.' })
     @Auth(ValidRoles.user)
     update(
         @Param('idEvent', ParseUUIDPipe) idEvent: string,
